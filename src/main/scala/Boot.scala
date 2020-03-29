@@ -11,7 +11,7 @@ object Boot extends App with ExchangeRoute {
   val conf: Config = ConfigFactory.load()
 
   implicit val system: ActorSystem = ActorSystem("exchange-admin", conf)
-  implicit val m = ActorMaterializer()
+  implicit val m: ActorMaterializer = ActorMaterializer()
   val rt: Route = route
 
   Http().bindAndHandle(rt, "0.0.0.0", 8080)

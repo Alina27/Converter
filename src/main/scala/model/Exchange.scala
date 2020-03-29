@@ -20,8 +20,7 @@ case class ExchangeRate(
                          purchaseRate: Option[Double]
                        )
 
-case class Buy(NBU: Double, PV: Option[Double])
-case class Sell(NBU: Double, PV: Option[Double])
+case class ConversionResult(NBU: Double, PV: Option[Double])
 
 sealed trait Errors
 
@@ -29,7 +28,7 @@ case class CannotParseJson(msg: String) extends Errors
 case class PBError(msg: String) extends Errors
 case class InvalidParam(param: String) extends Errors
 case class NoDataForDay(msg: String) extends Errors
-// TODO: Add n such currency or negative number
+case class UnavailableCurrency(msg: String) extends Errors
 
 
 object ExchangeRate {
@@ -42,12 +41,15 @@ object ResponseFromPB {
     casecodec5(ResponseFromPB.apply, ResponseFromPB.unapply)("date","bank","baseCurrency","baseCurrencyLit","exchangeRate")
 }
 
-object Buy {
-  implicit def BuyCodec: CodecJson[Buy] =
-    casecodec2(Buy.apply, Buy.unapply)("buyNBU","buyPB")
-}
 
-object Sell {
-  implicit def SellCodec: CodecJson[Sell] =
-    casecodec2(Sell.apply, Sell.unapply)("sellNBU","sellPB")
+object ConversionResult {
+  implicit def ConversionResultCodec: CodecJson[ConversionResult] =
+  CodecJson((cr: ConversionResult) =>
+    ("NBU" := cr.NBU) ->:
+      ("PB" :=? cr.PV) ->?: jEmptyObject,
+    c => for {
+      nbu <- (c --\ "NBU").as[Double]
+      pb <- (c --\ "PB").as[Option[Double]]
+    } yield ConversionResult(nbu, pb)
+  )
 }
