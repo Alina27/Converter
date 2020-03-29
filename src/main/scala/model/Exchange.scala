@@ -3,20 +3,17 @@ package model
 import argonaut._
 import Argonaut._
 
-case class Exchange()
-
 case class ResponseFromPB(
-                           //"date":"01.12.2014","bank":"PB","baseCurrency":980,"baseCurrencyLit":"UAH","exchangeRate":
                            date: String,
                            bank: String,
                            baseCurrency: Double,
                            baseCurrencyLit: String,
-                           exchangeRate: List[ExchangeRate]
+                           exchangeRate: Set[ExchangeRate]
                          )
 
 case class ExchangeRate(
                          baseCurrency: String,
-                         currency: String,
+                         currency: Option[String] ,
                          saleRateNB: Double,
                          purchaseRateNB: Double,
                          saleRate: Option[Double],
@@ -32,6 +29,8 @@ case class CannotParseJson(msg: String) extends Errors
 case class PBError(msg: String) extends Errors
 case class InvalidParam(param: String) extends Errors
 case class NoDataForDay(msg: String) extends Errors
+// TODO: Add n such currency or negative number
+
 
 object ExchangeRate {
   implicit def ExchangeRateCodec: CodecJson[ExchangeRate] =
