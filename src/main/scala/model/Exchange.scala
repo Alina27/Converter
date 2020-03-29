@@ -26,7 +26,6 @@ sealed trait Errors
 
 case class CannotParseJson(msg: String) extends Errors
 case class PBError(msg: String) extends Errors
-case class InvalidParam(param: String) extends Errors
 case class NoDataForDay(msg: String) extends Errors
 case class UnavailableCurrency(msg: String) extends Errors
 
